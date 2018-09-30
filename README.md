@@ -1,9 +1,11 @@
 # animateTween
 Tween运动封装
-let moveAnimation = Math.animation(50, 600, function (value) {
-  document.querySelector('#target2').style.left = value+'px';
-}, 'Quart.easeOut', 1400);
-cancelAnimationFrame(moveAnimation());
+```
+  let moveAnimation = Math.animation(50, 600, function (value) {
+    document.querySelector('#target2').style.left = value+'px';
+  }, 'Quart.easeOut', 1400);
+  cancelAnimationFrame(moveAnimation());
+```
 #### form和to是必须参数，表示动画起始数值和结束数值；
 #### duration，easing，callback理论上都是可选参数，但是实际上callback肯定是要使用的，因为实时变化的数值就是通过callback返回的。然后，duration，#### easing，callback这3个参数的顺序是任意的。具体来讲：
 #### duration为动画持续时间，默认300，默认单位是毫秒，建议使用数值，例如600，也支持带单位，例如600ms或者0.6s；
