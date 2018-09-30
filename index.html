@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Tween.js / yoyo</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+			.box {
+				width: 100px;
+				height: 100px;
+				display: flex;
+				flex-flow: row;
+				align-items: center;
+				text-align: center;
+				-webkit-border-radius: 70px;
+				-moz-border-radius: 70px;
+				border-radius: 70px;
+				position: absolute;
+				border: 1px solid black;
+				font-size: 10px;
+				padding: 20px;
+			}
+			#target1 {
+				background: #fcc;
+        margin-top:20px;
+			}
+			#target2 {
+				background: #cfc;
+        left:0;
+			}
+		</style>
+	</head>
+	<body>
+    <button onclick="stop()">暂停</button>
+    <button onclick="start()">开始</button>
+    <!-- 第一种 -->
+    <div id="target1" class="box">
+      旋转跳跃我闭着眼
+    </div>
+    <!-- 第二种 -->
+    <div class="box" id="target2" style="margin-top:200px;">
+      我来操作DOM
+    </div>
+    <script src="Tween.js"></script>
+    <script src="animateTween.js"></script>
+		<script>
+        // 第一种
+        animate(); //运动核心引擎
+        // 动画关键
+        function animate( time ) {
+          requestAnimationFrame( animate );
+          TWEEN.update( time );
+        }
+        var target1 = document.getElementById( 'target1' );
+        let setMoveData　= { rotation:0, x: 0,y:0} //创建运动起点
+				var	tween1 = new TWEEN.Tween( setMoveData )  //创建运动实例
+          .to( { rotation: 360, x: 300 }, 750 )  // 运动终点 运动时间
+          .repeat( Infinity ) //运动次数
+          .delay( 1000 )  //运动延迟时间
+          .yoyo( true ) //运动完成按时距返回
+          .easing( TWEEN.Easing.Cubic.InOut ) //运动曲线
+          // 可用函数有：Linear, Quadratic, Cubic, Quartic, Quintic, Sinusoidal, Exponential, 
+          // Circular, Elastic, Back 和 Bounce。easing 
+          // 类型分为: In, Out 和 InOut.
+          // TWEEN.getAll 和 TWEEN.removeAll
+          // 这两个方法用于胡获取被激活的tweens数组的一个引用，或从数组中删除所有tweens。
+          // TWEEN.add(tween) 和 TWEEN.remove(tween)
+          // 用于向被激活的tweens中添加一个tween，或移除一个tween。
+          .start()  //开始运动
+          .onUpdate( function(object) {
+            // console.log('在tween每次被更新后执行')
+            updateBox( target1, object );
+          })
+          .onStart(function(object){
+            console.log('tween开始动画前的回调函数。')
+          })
+          .onStop(function(){
+            console.log('tween结束动画后的回调函数。')
+          })
+          .onComplete(function(object){
+            console.log('在tween动画全部结束后执行。')
+          })
+        var	tween2 = new TWEEN.Tween( setMoveData )  //创建运动实例
+          .to( { rotation: 360, x: 300 ,y:200}, 750 )  // 运动终点 运动时间
+          .repeat( Infinity ) //运动次数
+          .delay( 1000 )  //运动延迟时间
+          .yoyo( true ) //运动完成按时距返回
+          .easing( TWEEN.Easing.Cubic.InOut ) //运动曲线
+          .start()  //开始运动
+          .onUpdate( function(object) {
+            // console.log('在tween每次被更新后执行')
+            updateBox( target1, object );
+          })
+          .onStart(function(object){
+            console.log('tween开始动画前的回调函数。')
+          })
+          .onStop(function(){
+            console.log('tween结束动画后的回调函数。')
+          })
+          .onComplete(function(object){
+            console.log('在tween动画全部结束后执行。')
+          })
+
+        tween1.chain(tween2); //制作多行动画
+        console.log(TWEEN)
+      
+      function updateBox( box, params ) {
+				var s = box.style;
+				let transform = 'translateX(' + Math.round(params.x) + 'px) rotate(' + Math.floor( params.rotation ) + 'deg)' + 'translateY(' + Math.round(params.y) + 'px)';
+				s.webkitTransform = transform;
+				s.mozTransform = transform;
+				s.transform = transform;
+			}
+      // 暂停动画 --重新制定起点
+      function stop(){
+        tween1.stop();
+        console.log(tween1)
+      }
+      // 开始  
+      function start(){
+        tween1.start()
+      }
+      
+      // 第二种
+      let moveAnimation = Math.animation(50, 600, function (value) {
+          document.querySelector('#target2').style.left = value+'px';
+      }, 'Quart.easeOut', 1400);
+      // cancelAnimationFrame(moveAnimation());
+      // form和to是必须参数，表示动画起始数值和结束数值；
+      // duration，easing，callback理论上都是可选参数，但是实际上callback肯定是要使用的，因为实时变化的数值就是通过callback返回的。然后，duration，easing，callback这3个参数的顺序是任意的。具体来讲：
+      // duration为动画持续时间，默认300，默认单位是毫秒，建议使用数值，例如600，也支持带单位，例如600ms或者0.6s；
+      // easing为缓动的类型，字符串类型，源自Tween.js。例如：'Linear'，'Quad.easeIn'，'Bounce.easeInOut'等等，需要注意大小写。 其中，默认值是'Linear'；
+      // callback为回调函数，支持2个参数（value, isEnding），其中value表示实时变化的计算值，isEnding是布尔值，表示动画是否完全停止。
+      // Math.animation返回一个函数，执行这个函数可以返回当前动画使用的请求动画帧，使用cancelAnimationFrame方法可以停止
+		</script>
+	</body>
+</html>
